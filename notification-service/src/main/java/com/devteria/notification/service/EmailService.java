@@ -21,13 +21,13 @@ import java.util.List;
 public class EmailService {
     EmailClient emailClient;
 
-    String apiKey = "your-brevo-apikey";
+    String apiKey = "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";
 
     public EmailResponse sendEmail(SendEmailRequest request) {
         EmailRequest emailRequest = EmailRequest.builder()
                 .sender(Sender.builder()
-                        .name("Devteria DotCom")
-                        .email("devteriadotcom@gmail.com")
+                        .name("NamNgoc")
+                        .email("onggia23197@gmail.com")
                         .build())
                 .to(List.of(request.getTo()))
                 .subject(request.getSubject())
