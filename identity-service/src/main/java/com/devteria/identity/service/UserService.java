@@ -1,5 +1,6 @@
 package com.devteria.identity.service;
 
+import com.devteria.event.dto.NotificationEvent;
 import com.devteria.identity.constant.PredefinedRole;
 import com.devteria.identity.dto.request.UserCreationRequest;
 import com.devteria.identity.dto.request.UserUpdateRequest;
@@ -37,7 +38,7 @@ public class UserService {
     ProfileMapper profileMapper;
     PasswordEncoder passwordEncoder;
     ProfileClient profileClient;
-    KafkaTemplate<String, String> kafkaTemplate;
+    KafkaTemplate<String, Object> kafkaTemplate;
 
     public UserResponse createUser(UserCreationRequest request) {
         if (userRepository.existsByUsername(request.getUsername())) throw new AppException(ErrorCode.USER_EXISTED);
@@ -56,8 +57,15 @@ public class UserService {
 
         profileClient.createProfile(profileRequest);
 
+        NotificationEvent notificationEvent = NotificationEvent.builder()
+                .channel("EMAIL")
+                .recipient(request.getEmail())
+                .subject("Welcome to bookteria")
+                .body("Hello, " + user.getUsername() + "!")
+                .build();
+
         // Publish message to kafka
-        kafkaTemplate.send("onboard-successful", "Welcome our new member " + user.getUsername());
+        kafkaTemplate.send("notification-delivery", notificationEvent);
 
         return userMapper.toUserResponse(user);
     }
