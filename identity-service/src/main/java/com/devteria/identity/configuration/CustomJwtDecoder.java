@@ -24,6 +24,7 @@ public class CustomJwtDecoder implements JwtDecoder {
         this.authenticationService = authenticationService;
     }
 
+    // Phương thức decode được triển khai từ giao diện JwtDecoder, có trách nhiệm giải mã token JWT
     @Override
     public Jwt decode(String token) throws JwtException {
 
@@ -46,13 +47,17 @@ public class CustomJwtDecoder implements JwtDecoder {
 //        return nimbusJwtDecoder.decode(token);
 
         try {
+
+            //Phương thức cố gắng parse token JWT từ chuỗi đầu vào. SignedJWT là một lớp từ thư viện Nimbus JOSE + JWT, được sử dụng để xử lý các token JWT đã ký.
             SignedJWT signedJWT = SignedJWT.parse(token);
 
-            return new Jwt(token,
-                    signedJWT.getJWTClaimsSet().getIssueTime().toInstant(),
-                    signedJWT.getJWTClaimsSet().getExpirationTime().toInstant(),
-                    signedJWT.getHeader().toJSONObject(),
-                    signedJWT.getJWTClaimsSet().getClaims());
+            // Nếu việc parse thành công, phương thức sẽ lấy các thông tin từ token đã parse (như thời gian phát hành, thời gian hết hạn, header, và các claims)
+            // và sử dụng các thông tin này để tạo một đối tượng Jwt từ Spring Security
+            return new Jwt(token, // token: Chuỗi token gốc.
+                    signedJWT.getJWTClaimsSet().getIssueTime().toInstant(), // issueTime: Thời gian phát hành token (dạng Instant).
+                    signedJWT.getJWTClaimsSet().getExpirationTime().toInstant(), // expirationTime: Thời gian hết hạn của token (dạng Instant).
+                    signedJWT.getHeader().toJSONObject(), // header: Các header của token (dạng JSON).
+                    signedJWT.getJWTClaimsSet().getClaims()); // claims: Các claims (payload) của token.
         } catch (ParseException e) {
             throw new JwtException("Invalid token");
         }
