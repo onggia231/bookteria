@@ -21,19 +21,21 @@ import java.util.List;
 public class EmailService {
     EmailClient emailClient;
 
+    // apiKey lay tu web Brevo
     String apiKey = "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";
 
     public EmailResponse sendEmail(SendEmailRequest request) {
         EmailRequest emailRequest = EmailRequest.builder()
-                .sender(Sender.builder()
+                .sender(Sender.builder() // nguoi gui
                         .name("NamNgoc")
                         .email("onggia23197@gmail.com")
                         .build())
-                .to(List.of(request.getTo()))
+                .to(List.of(request.getTo())) // nguoi nhan
                 .subject(request.getSubject())
                 .htmlContent(request.getHtmlContent())
                 .build();
         try {
+            // Dung Brevo de gen key roi moi gui duoc mail
             return emailClient.sendEmail(apiKey, emailRequest);
         } catch (FeignException e){
             throw new AppException(ErrorCode.CANNOT_SEND_EMAIL);

@@ -19,9 +19,12 @@ public class NotificationController {
 
     EmailService emailService;
 
+    // Lang nghe notification tu noi khac gui den voi topic = notification-deliver
     @KafkaListener(topics = "notification-delivery")
     public void listenNotificationDelivery(NotificationEvent message) {
         log.info("Message received: {}", message);
+
+        // Send email
         emailService.sendEmail(SendEmailRequest.builder()
                 .to(Recipient.builder()
                         .email(message.getRecipient())

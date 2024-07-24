@@ -12,8 +12,8 @@ import lombok.experimental.FieldDefaults;
 @NoArgsConstructor
 @AllArgsConstructor
 @FieldDefaults(level = AccessLevel.PRIVATE)
-public class SendEmailRequest {
-    Recipient to;
+public class SendEmailRequest { // gui 1 email di
+    Recipient to; // nguoi nhan mai
     String subject;
     String htmlContent;
 }

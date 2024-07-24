@@ -15,8 +15,8 @@ import java.util.List;
 @AllArgsConstructor
 @FieldDefaults(level = AccessLevel.PRIVATE)
 public class EmailRequest {
-    Sender sender;
-    List<Recipient> to;
+    Sender sender; // nguoi gui email
+    List<Recipient> to; // nguoi nhan email
     String subject;
     String htmlContent;
 }
