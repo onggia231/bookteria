@@ -27,4 +27,4 @@ spring:
           predicates:
           - Path=${app.api-prefix}/notification/**
           filters:
-          - StripPrefix=2
+          - StripPrefix=2 # vd url: /api/v1/identity/user -> StripPrefix=2, loại bỏ 2 phần tử đầu tiên của đường dẫn (/api/v1), còn lại /identity/user.

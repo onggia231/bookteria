@@ -29,11 +29,11 @@ import java.util.List;
 @Component
 @Slf4j
 @RequiredArgsConstructor
-@FieldDefaults(level = AccessLevel.PACKAGE, makeFinal = true)
-public class AuthenticationFilter implements GlobalFilter, Ordered {
+@FieldDefaults(level = AccessLevel.PACKAGE, makeFinal = true) // cho truy cap trong cung goi
+public class AuthenticationFilter implements GlobalFilter, Ordered { // để cấu hình và tùy chỉnh hành vi của các bộ lọc trong gateway
 
-    IdentityService identityService;
-    ObjectMapper objectMapper;
+    IdentityService identityService; // check xem Introspect co dung token khong
+    ObjectMapper objectMapper; // chuyển đổi giữa các đối tượng Java và các định dạng JSON
 
     // list endpoint khong can authentication
     @NonFinal
@@ -48,17 +48,22 @@ public class AuthenticationFilter implements GlobalFilter, Ordered {
 
     @Override
     public Mono<Void> filter(ServerWebExchange exchange, GatewayFilterChain chain) {
+        // ServerWebExchange: Đại diện cho yêu cầu và phản hồi HTTP trong Spring Cloud Gateway.
+        // GatewayFilterChain: Cho phép chuyển yêu cầu tiếp tục qua các bộ lọc và cuối cùng đến dịch vụ đích.
+
         log.info("Enter authentication filter...");
 
+        // Kiểm tra xem yêu cầu có phải là đến một endpoint công khai không. Nếu đúng, yêu cầu sẽ được chuyển tiếp đến dịch vụ đích mà không cần xác thực.
         if (isPublicEndpoint(exchange.getRequest()))
-            return chain.filter(exchange);
+            return chain.filter(exchange); // Nếu endpoint là công khai, bỏ qua bộ lọc và tiếp tục xử lý yêu cầu.
 
 
         // Get token from authorization header
-        List<String> authHeader = exchange.getRequest().getHeaders().get(HttpHeaders.AUTHORIZATION);
-        if (CollectionUtils.isEmpty(authHeader))
+        List<String> authHeader = exchange.getRequest().getHeaders().get(HttpHeaders.AUTHORIZATION); // Lấy tiêu đề Authorization từ yêu cầu HTTP. Tiêu đề này thường chứa token JWT.
+        if (CollectionUtils.isEmpty(authHeader)) // Nếu không có tiêu đề, yêu cầu sẽ bị coi là không được xác thực và trả về phản hồi không được xác thực.
             return unauthenticated(exchange.getResponse());
 
+        // Lấy token từ tiêu đề Authorization (giả định là token có dạng Bearer token). Bearer sẽ được loại bỏ để lấy token thực tế.
         String token = authHeader.stream().findFirst().get().replace("Bearer ", "");
         log.info("Token: {}", token);
 
@@ -67,9 +72,10 @@ public class AuthenticationFilter implements GlobalFilter, Ordered {
 //            log.info("Introspect Response: {}", introspectResponseApiResponse.getResult().isValid());
 //        });
 
+        // Gọi dịch vụ xác thực (có thể là dịch vụ xác thực JWT) để kiểm tra tính hợp lệ của token
         return identityService.introspect(token).flatMap(introspectResponse -> {
-            if (introspectResponse.getResult().isValid())
-                return chain.filter(exchange);
+            if (introspectResponse.getResult().isValid()) // Nếu token hợp lệ
+                return chain.filter(exchange); // yêu cầu sẽ được chuyển tiếp đến dịch vụ đích
             else
                 return unauthenticated(exchange.getResponse());
         }).onErrorResume(throwable -> unauthenticated(exchange.getResponse()));
@@ -80,11 +86,17 @@ public class AuthenticationFilter implements GlobalFilter, Ordered {
         return -1;
     }
 
-    private boolean isPublicEndpoint(ServerHttpRequest request) {
+    private boolean isPublicEndpoint(ServerHttpRequest request) { // ServerHttpRequest đại diện cho yêu cầu HTTP hiện tại.
+
+        // request.getURI().getPath(): Lấy đường dẫn (path) của URI từ yêu cầu HTTP. Ví dụ: /api/v1/users/123.
+        // Đây là tiền tố (prefix) của API, có thể được cấu hình trong ứng dụng. Ví dụ: /api/v1
+        // Chuyển đổi mảng publicEndpoints thành một stream để thực hiện các phép toán trên từng phần tử của mảng.
+        // anyMatch: Kiểm tra xem có bất kỳ phần tử nào trong stream thỏa mãn điều kiện không.
         return Arrays.stream(publicEndpoints)
                 .anyMatch(s -> request.getURI().getPath().matches(apiPrefix + s));
     }
 
+    // để xử lý các yêu cầu không được xác thực (unauthenticated requests)
     Mono<Void> unauthenticated(ServerHttpResponse response) {
         ApiResponse<?> apiResponse = ApiResponse.builder()
                 .code(1401)
@@ -93,6 +105,7 @@ public class AuthenticationFilter implements GlobalFilter, Ordered {
 
         String body = null;
         try {
+            // Sử dụng ObjectMapper để chuyển đối tượng ApiResponse thành chuỗi JSON
             body = objectMapper.writeValueAsString(apiResponse);
         } catch (JsonProcessingException e) {
             throw new RuntimeException(e);

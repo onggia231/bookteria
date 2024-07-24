@@ -17,10 +17,11 @@ public class WebClientConfiguration {
     @Bean
     WebClient webClient() {
         return WebClient.builder()
-                .baseUrl("http://localhost:8080/identity")
+                .baseUrl("http://localhost:8080/identity") // chỉ định URL cơ sở mà WebClient sẽ sử dụng cho tất cả các yêu cầu HTTP
                 .build();
     }
 
+    // Cấu hình CORS truoc duoc dat trong identity-service nhung gio dua ra api-gateway lam common
     @Bean
     CorsWebFilter corsWebFilter(){
         CorsConfiguration corsConfiguration = new CorsConfiguration();
@@ -35,11 +36,12 @@ public class WebClientConfiguration {
     }
 
 
+    // Tạo một client dịch vụ sử dụng WebClient để giao tiếp với dịch vụ bên ngoài, với sự hỗ trợ của HttpServiceProxyFactory.
     @Bean
     IdentityClient identityClient(WebClient webClient) {
         HttpServiceProxyFactory httpServiceProxyFactory = HttpServiceProxyFactory
                 .builderFor(WebClientAdapter.create(webClient)).build();
 
-        return httpServiceProxyFactory.createClient(IdentityClient.class);
+        return httpServiceProxyFactory.createClient(IdentityClient.class); // tạo một proxy client cho IdentityClient
     }
 }
