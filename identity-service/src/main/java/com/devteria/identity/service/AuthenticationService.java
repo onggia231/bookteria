@@ -177,5 +177,7 @@ public class AuthenticationService {
         return stringJoiner.toString();
     }
 
+    // record là một từ khóa trong Java để định nghĩa một lớp dữ liệu bất biến.
+    // Nó tự động tạo ra các phương thức constructor, equals(), hashCode(), toString(), và các phương thức truy cập (getters) cho các trường dữ liệu.
     private record TokenInfo(String token, Date expiryDate) {}
 }
