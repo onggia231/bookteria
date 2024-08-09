@@ -19,3 +19,7 @@ This microservice is responsible for:
 
 ## Build application
 `mvn clean package`
+
+## Luu y sd OpenFeign
+1. Khai cloud de dung openfeign. Moi version cloud se tuong ung voi version spring
+2. Khi tao 1 User no se dong thoi dung openfeign de goi den api tao Profile (set id cua user vao Profile)

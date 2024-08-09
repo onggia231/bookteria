@@ -46,6 +46,7 @@ public class AuthenticationFilter implements GlobalFilter, Ordered { // để c�
     @NonFinal
     private String apiPrefix;
 
+    // Tat ca request se chay vao day
     @Override
     public Mono<Void> filter(ServerWebExchange exchange, GatewayFilterChain chain) {
         // ServerWebExchange: Đại diện cho yêu cầu và phản hồi HTTP trong Spring Cloud Gateway.

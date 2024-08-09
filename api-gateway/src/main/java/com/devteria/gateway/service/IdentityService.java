@@ -15,7 +15,7 @@ import reactor.core.publisher.Mono;
 @FieldDefaults(level = AccessLevel.PRIVATE, makeFinal = true)
 public class IdentityService {
 
-    IdentityClient identityClient; // call /auth/introspect
+    IdentityClient identityClient; // call /auth/introspect : no tuong tu dung OpenFeign
 
     public Mono<ApiResponse<IntrospectResponse>> introspect(String token){
         return identityClient.introspect(IntrospectRequest.builder()

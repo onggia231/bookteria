@@ -14,6 +14,7 @@ import org.springframework.web.service.invoker.HttpServiceProxyFactory;
 @Configuration
 public class WebClientConfiguration {
 
+    //  Tạo một WebClient để giao tiếp với dịch vụ identity
     @Bean
     WebClient webClient() {
         return WebClient.builder()
@@ -36,7 +37,11 @@ public class WebClientConfiguration {
     }
 
 
+    // IdentityClient để giao tiếp với
+    // HttpServiceProxyFactory một factory để tạo ra các proxy cho các dịch vụ HTTP, giúp dễ dàng tích hợp và giao tiếp với các dịch vụ REST bên ngoài
+    // Bean WebClient được tạo từ phương thức webClient() trước đó sẽ được tiêm vào phương thức này, nhằm tạo ra một client proxy cho IdentityClient để thực hiện các yêu cầu HTTP một cách dễ dàng
     // Tạo một client dịch vụ sử dụng WebClient để giao tiếp với dịch vụ bên ngoài, với sự hỗ trợ của HttpServiceProxyFactory.
+    // Tạo một proxy client cho IdentityClient sử dụng WebClient đã cấu hình
     @Bean
     IdentityClient identityClient(WebClient webClient) {
         HttpServiceProxyFactory httpServiceProxyFactory = HttpServiceProxyFactory

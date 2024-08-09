@@ -3,11 +3,14 @@ package com.devteria.identity.configuration;
 import feign.RequestInterceptor;
 import feign.RequestTemplate;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.stereotype.Component;
 import org.springframework.util.StringUtils;
 import org.springframework.web.context.request.RequestContextHolder;
 import org.springframework.web.context.request.ServletRequestAttributes;
 
+// Class duoc sinh ra de giai quyet van de: Khi gọi api create User thi trong ham co call tiep den api tao Profile
+// Khi tao Profile no se bao loi khong co quyen
+// De giai quyet van de nay tao AuthenticationRequestInterceptor đảm bảo rằng mọi yêu cầu HTTP gửi đi đều có header "Authorization"
+// Muon dung thi class @FeignClien can khai configuration la AuthenticationRequestInterceptor de su dung
 @Slf4j
 public class AuthenticationRequestInterceptor implements RequestInterceptor { // RequestInterceptor để chặn và chỉnh sửa các yêu cầu HTTP trước khi chúng được gửi đi
     @Override

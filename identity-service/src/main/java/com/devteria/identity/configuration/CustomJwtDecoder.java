@@ -28,6 +28,7 @@ public class CustomJwtDecoder implements JwtDecoder {
     @Override
     public Jwt decode(String token) throws JwtException {
 
+        // Doan check token nay da duoc check o api-gateway nen khong can nua
 //        try {
 //            var response = authenticationService.introspect(
 //                    IntrospectRequest.builder().token(token).build());
