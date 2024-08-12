@@ -125,7 +125,7 @@ public class AuthenticationService {
                 .toEpochMilli());
 
         JWTClaimsSet jwtClaimsSet = new JWTClaimsSet.Builder()
-                .subject(user.getUsername())
+                .subject(user.getId()) // de trong token co user id, Post get user id qua token (tham so trong token la 'sub')
                 .issuer("devteria.com")
                 .issueTime(issueTime)
                 .expirationTime(expiryTime)

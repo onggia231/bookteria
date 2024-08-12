@@ -28,3 +28,9 @@ spring:
           - Path=${app.api-prefix}/notification/**
           filters:
           - StripPrefix=2 # vd url: /api/v1/identity/user -> StripPrefix=2, loại bỏ 2 phần tử đầu tiên của đường dẫn (/api/v1), còn lại /identity/user.
+        - id: post_service
+          uri: http://localhost:8083
+          predicates:
+            - Path=${app.api-prefix}/post/**
+          filters:
+            - StripPrefix=2
