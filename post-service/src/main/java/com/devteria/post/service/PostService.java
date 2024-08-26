@@ -22,6 +22,7 @@ import java.util.List;
 @RequiredArgsConstructor
 @FieldDefaults(level = AccessLevel.PRIVATE, makeFinal = true)
 public class PostService {
+    DateTimeFormatter dateTimeFormatter;
     PostRepository postRepository;
     PostMapper postMapper;
 
@@ -59,12 +60,18 @@ public class PostService {
         Pageable pageable = PageRequest.of(page - 1, size, sort); // Vi ben Controller trang bat dau dang la 1 nen o day page - 1
         var pageData = postRepository.findAllByUserId(userId, pageable);
 
+        var postList = pageData.getContent().stream().map(post -> {
+            var postResponse = postMapper.toPostResponse(post);
+            postResponse.setCreated(dateTimeFormatter.format(post.getCreatedDate()));
+            return postResponse;
+        }).toList();
+
         return PageResponse.<PostResponse>builder()
                 .currentPage(page)
                 .pageSize(pageData.getSize())
                 .totalPages(pageData.getTotalPages())
                 .totalElements(pageData.getTotalElements())
-                .data(pageData.getContent().stream().map(postMapper::toPostResponse).toList())
+                .data(postList)
                 .build();
     }
 }
